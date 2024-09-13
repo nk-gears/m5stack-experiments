@@ -51,6 +51,10 @@ def btnA_wasClicked_event(state):
         #switch_page(1)
 
         # Check if the value is 5 and call the HTTP endpoint
+      if selected_value == 0:
+          print("Num 5 selected, calling HTTP endpoint...")
+          call_https_endpoint("http://192.168.1.13:1880/exercise")
+
       if selected_value == 1:
           print("Num 5 selected, calling HTTP endpoint...")
           call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Office%20UPS&state=0")
@@ -131,12 +135,15 @@ def loop():
         # Update the rotary value on the current page
         new_value = rotary.get_rotary_value()
 
-        if current_page == 0:
+        if current_page == 0 and new_value>=0:
             label0.setText(str(new_value))
         #elif current_page == 1:
             #label2.setText(f"Sel: {new_value}")
 
-        if new_value == 1 and new_value != selected_value:    
+        if new_value == 0 and new_value != selected_value:    
+            label3.setText(f"    Start Exercise     ")
+
+        elif new_value == 1 and new_value != selected_value:    
             label3.setText(f"Turn OFF - Office UPS")
 
         elif new_value == 2 and new_value != selected_value:     
@@ -146,16 +153,17 @@ def loop():
             label3.setText(f"   Turn OFF - Laptop ")
 
         elif new_value == 4 and new_value != selected_value:     
-            label3.setText(f".  Turn ON - Laptop ")    
+            label3.setText(f"  Turn ON - Laptop ")    
 
         elif new_value == 5 and new_value != selected_value:     
-            label3.setText(f".  Turn OFF - TV  ")                             
+            label3.setText(f"  Turn OFF - TV      ")                             
 
         elif new_value == 6 and new_value != selected_value:     
-            label3.setText(f".  Turn ON - TV ")             
+            label3.setText(f"  Turn ON - TV     ")             
+
         #else:
             #label3.setText("") 
-        if new_value > 6 and new_value != selected_value: 
+        if (new_value < 0) or (new_value > 6 and new_value != selected_value): 
             label3.setText("")
 
         # Update the selected value to avoid repeated calls

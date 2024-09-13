@@ -12,6 +12,7 @@ label0 = None
 image0 = None
 label1 = None
 label2 = None  # New label for message on second page
+label3 = None 
 circle0 = None
 rotary = None
 current_page = 0  # To track the current page (0 for main, 1 for message)
@@ -21,7 +22,7 @@ selected_value = -1  # To store the last rotary value
 
 # Function to switch pages
 def switch_page(page):
-    global label0, label1, label2, circle0
+    global label0, label1, label2,label3, circle0
     Widgets.fillScreen(0x222222)  # Clear the screen
     
     if page == 0:
@@ -46,13 +47,40 @@ def btnA_wasClicked_event(state):
     global current_page, rotary
     if current_page == 0:
         # Switch to message page when on the main page
-        current_page = 1
-        switch_page(1)
-    else:
-        # Return to the main page when on the message page
-        rotary.reset_rotary_value()
-        current_page = 0
-        switch_page(0)
+        #current_page = 1
+        #switch_page(1)
+
+        # Check if the value is 5 and call the HTTP endpoint
+      if selected_value == 1:
+          print("Num 5 selected, calling HTTP endpoint...")
+          call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Office%20UPS&state=0")
+
+      if selected_value == 2:
+          print("Num 6 selected, calling HTTP endpoint...")
+          call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Office%20UPS&state=1")     
+
+
+      if selected_value == 3:
+          print("Num 5 selected, calling HTTP endpoint...")
+          call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Laptop&state=0")
+
+      if selected_value == 4:
+          print("Num 6 selected, calling HTTP endpoint...")
+          call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Laptop&state=1")     
+
+      if selected_value == 5:
+          print("Num 5 selected, calling HTTP endpoint...")
+          call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Tv%20Plug&state=0")
+
+      if selected_value == 6:
+          print("Num 6 selected, calling HTTP endpoint...")
+          call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Tv%20Plug&state=1")            
+
+    #else:
+       # Return to the main page when on the message page
+       # rotary.reset_rotary_value()
+       # current_page = 0
+       # switch_page(0)
 
  
 def call_https_endpoint(url):
@@ -70,16 +98,19 @@ def call_https_endpoint(url):
             print("Error: HTTP Status Code", response.status_code)
     except Exception as e:
         print(f"Error making HTTPS request: {e}")
+        
 def setup():
-    global label0, label1, label2, circle0, rotary
+    global label0, label1, label2,label3, circle0, rotary
 
     M5.begin()
     Widgets.fillScreen(0x222222)
     Widgets.setRotation(3)
 
     # Main Page Widgets
-    label0 = Widgets.Label("Nirmal", 96, 80, 1.0, 0xffa000, 0x222222, Widgets.FONTS.DejaVu72)
+    label0 = Widgets.Label("0", 96, 80, 1.0, 0xffa000, 0x222222, Widgets.FONTS.DejaVu72)
     label1 = Widgets.Label("label1", 25, 114, 1.0, 0xffffff, 0xb32a2a, Widgets.FONTS.DejaVu18)
+    label3 = Widgets.Label("", 15, 156, 1.0, 0x91efbd, 0xb32a2a, Widgets.FONTS.DejaVu18)
+    label3.setVisible(True)
     #circle0 = Widgets.Circle(117, 46, 15, 0xffffff, 0xffffff)
 
     # Message Page Widget
@@ -93,7 +124,7 @@ def setup():
 
 
 def loop():
-    global rotary, label0, label2, current_page, selected_value
+    global rotary, label0, label2,label3, current_page, selected_value
     M5.update()
 
     if rotary.get_rotary_status():
@@ -102,17 +133,30 @@ def loop():
 
         if current_page == 0:
             label0.setText(str(new_value))
-        elif current_page == 1:
-            label2.setText(f"Sel: {new_value}")
+        #elif current_page == 1:
+            #label2.setText(f"Sel: {new_value}")
 
-        # Check if the value is 5 and call the HTTP endpoint
-        if new_value == 5 and new_value != selected_value:
-            print("Num 5 selected, calling HTTP endpoint...")
-            call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Office%20UPS&state=0")
+        if new_value == 1 and new_value != selected_value:    
+            label3.setText(f"Turn OFF - Office UPS")
 
-        if new_value == 6 and new_value != selected_value:
-            print("Num 6 selected, calling HTTP endpoint...")
-            call_https_endpoint("https://nkgears-iot-dz75mjs44a-ew.a.run.app/iot?device=Office%20UPS&state=1")            
+        elif new_value == 2 and new_value != selected_value:     
+            label3.setText(f"Turn ON - Office UPS") 
+
+        if new_value == 3 and new_value != selected_value:    
+            label3.setText(f"   Turn OFF - Laptop ")
+
+        elif new_value == 4 and new_value != selected_value:     
+            label3.setText(f".  Turn ON - Laptop ")    
+
+        elif new_value == 5 and new_value != selected_value:     
+            label3.setText(f".  Turn OFF - TV  ")                             
+
+        elif new_value == 6 and new_value != selected_value:     
+            label3.setText(f".  Turn ON - TV ")             
+        #else:
+            #label3.setText("") 
+        if new_value > 6 and new_value != selected_value: 
+            label3.setText("")
 
         # Update the selected value to avoid repeated calls
         selected_value = new_value
